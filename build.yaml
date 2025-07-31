@@ -1,0 +1,55 @@
+# Trigger the pipeline on any change to the Main branch
+trigger:
+  - main
+
+# Use the latest Ubuntu VM image to run this pipeline
+pool:
+  vmImage: ubuntu-latest
+
+# Reference a variable group for secrets (Docker credentials)
+variables:
+  - group: ContainerRegistrySecrets  # Contains REGISTRY_USERNAME and REGISTRY_PASSWORD
+
+# Define the stage for Build and Push
+stages:
+  - stage: BuildAndPushStage            # A stage is a logical boundary that contains jobs
+    displayName: 'Build and Push Stage' # Human-readable name for the stage
+
+    jobs:
+      - job: BuildAndPushJob            # A job runs on a single agent
+        displayName: 'Build and Push Docker Image'
+
+        steps:
+          # Step 1: Checkout the source code from GitHub
+          - checkout: self
+            displayName: 'Checkout code'
+
+          # Step 2: Log in to Docker Hub using the secret variables
+          - script: |
+              echo "$(REGISTRY_PASSWORD)" | docker login -u "$(REGISTRY_USERNAME)" --password-stdin
+            displayName: 'Docker Login'
+
+          # Step 3: Build the Docker image
+          - script: |
+              docker build -t $(REGISTRY_USERNAME)/my-java-app:$(Build.BuildId) .
+            displayName: 'Build Docker Image'
+
+          # Step 4: Push the image to Docker Hub
+          - script: |
+              docker push $(REGISTRY_USERNAME)/my-java-app:$(Build.BuildId)
+            displayName: 'Push Docker Image'
+
+          # Step 5: Optional logout step
+          - script: docker logout
+            displayName: 'Docker Logout'
+
+          # Optional Azure CLI-based task (commented out)
+          # - task: Docker@2
+          #   inputs:
+          #     command: buildAndPush
+          #     repository: $(REGISTRY_USERNAME)/my-java-app
+          #     dockerfile: Dockerfile
+          #     containerRegistry: <your-Azure-service-connection-name>
+          #     tags: |
+          #       $(Build.BuildId)
+          #   displayName: 'Azure DevOps Docker Build and Push (Alternative)'
