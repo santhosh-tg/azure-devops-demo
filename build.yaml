@@ -1,4 +1,4 @@
-# Trigger the pipeline on any change to the main branch
+# Trigger the pipeline on any change to the Main branch
 trigger:
   - main
 
