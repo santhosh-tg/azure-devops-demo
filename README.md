@@ -7,6 +7,8 @@
 - Azure DevOps account
 - Organization and project created
 
+Ref: https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/create-organization?view=azure-devops
+
 ### 2. GitHub
 - GitHub account
 - Repository with:
@@ -15,7 +17,7 @@
   - YAML pipeline file
 - GitHub App installed and authorized for Azure DevOps
 
-https://github.com/apps/azure-pipelines
+Ref: https://github.com/apps/azure-pipelines
 
 ### 3. Docker Hub
 - Docker Hub account
